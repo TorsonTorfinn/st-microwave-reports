@@ -3,6 +3,7 @@ from io import BytesIO
 from pathlib import Path
 import re
 import streamlit as st
+from functions import get_region
 
 
 def mw_links_alarm(alarm_file, progress_callback=None):
@@ -75,12 +76,36 @@ def mw_links_alarm(alarm_file, progress_callback=None):
     mw_report_df = mw_df.copy()
     mw_report_df['Request Type'] = 'MW'
     mw_report_df['Sub Type'] = 'MW links alarms'
+    mw_report_df['Link name'] = mw_report_df['NE']
+    mw_report_df['Site ID'] = mw_report_df['NE'].str[:6]
+    mw_report_df['Region'] = mw_report_df['Site ID'].apply(get_region)
+    mw_report_df['Port'] = '-'
+    mw_report_df['Link Type'] = 'NR'
+    mw_report_df['Description'] = 'MW Links Alarms: ' + mw_report_df['Alarm Code']
+    mw_report_df['Value'] = '-'
+    mw_report_df['Time'] = mw_report_df['Raised Time']
+    mw_report_df['Severity'] = mw_report_df['Severity']
+    mw_report_df['Action to'] = 'FLM'
 
+    mw_report_df = mw_report_df[
+        ['Request Type', 
+         'Sub Type', 
+         'Link name', 
+         'Site ID', 
+         'Region', 
+         'Port', 
+         'Link Type', 
+         'Description', 
+         'Value', 
+         'Time', 
+         'Severity', 
+         'Action to']
+    ]
 
 
     excel_buffer = BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-        mw_df.to_excel(writer, sheet_name='MWLinksAlarm(FILTERED)', index=False)
+        mw_report_df.to_excel(writer, sheet_name='MWLinksAlarm(FILTERED)', index=False)
 
     if progress_callback:
         progress_callback(100)
