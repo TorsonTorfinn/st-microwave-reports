@@ -3,7 +3,7 @@ from io import BytesIO
 from pathlib import Path
 import re
 import streamlit as st
-from functions import get_region
+from backend.functions import get_region
 
 
 def mw_links_alarm(alarm_file, progress_callback=None):
