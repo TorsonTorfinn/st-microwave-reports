@@ -5,10 +5,10 @@ from datetime import datetime
 st.title('Bad Rx Lvl Report')
 st.sidebar.warning('Select Report Type')
 
-stand_file = st.file_uploader('Upload NR Series RadioLink Info File')
-atoll_file = st.file_uploader('Upload BIT Links Atoll File')
+stand_file = st.file_uploader('Upload **RADIO-LINK** Info File')
+atoll_file = st.file_uploader('Upload **BIT LINKS ATOLL** File')
 
-mw_tt_file = st.file_uploader('Upload Proccessing Works MWTT File')
+mw_tt_file = st.file_uploader('Upload Proccessing **WORKS MWTT** File')
 
 if mw_tt_file:
     process_mw_tt(mw_tt_file)

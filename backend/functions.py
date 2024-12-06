@@ -64,7 +64,6 @@ def process_link_status(nr_report_df, stand_file, atoll_file):
 
     # Обновление столбца Severity для ссылок со статусом 'STAND-BY' на 'Minor'
     nr_report_df.loc[nr_report_df['Link Status'] == 'STAND-BY', 'Severity'] = 'Minor'
-
     nr_report_df.loc[(nr_report_df['Link Status'] == 'STAND-BY') & (nr_report_df['Link name'].str[:13].isin([link[:13] for link in active_links_set])),'Link Status'] = 'ACTIVE'
     
     return nr_report_df

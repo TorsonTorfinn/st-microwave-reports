@@ -1,3 +1,6 @@
 venv
 test.py
 __pycache__
+*.xlsx
+
+.env

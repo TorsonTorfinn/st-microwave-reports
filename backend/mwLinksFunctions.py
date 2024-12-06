@@ -105,11 +105,86 @@ def mw_links_alarm(alarm_file, progress_callback=None):
 
     excel_buffer = BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-        mw_report_df.to_excel(writer, sheet_name='MWLinksAlarm(FILTERED)', index=False)
+        mw_report_df.to_excel(writer, sheet_name='NR MW Links Alarms(FILTERED)', index=False)
 
     if progress_callback:
         progress_callback(100)
 
     st.write(mw_df)
+
+    return excel_buffer, None
+
+
+
+def rtn_links_alarms(alarm_file, progress_callback=None):
+    if progress_callback:
+        progress_callback(10)
+
+    df = pd.read_excel(alarm_file, engine='openpyxl', parse_dates=['First Occurred (ST)'], skiprows=5)
+    mwAlarmDF = df[['Alarm Source', 'First Occurred (ST)', 'Severity']]
+
+    if progress_callback:
+        progress_callback(30)
+
+    def sort_links(alarm_source):
+        regex_form = re.compile(r'^[A-Za-z]{2}\d{4}$|^[A-Za-z]{3}\d{3}$|^[A-Za-z]{4}\d{2}')
+        alarm_source['Links'] = [[] for _ in range(len(alarm_source))]
+
+        for i in alarm_source.index:
+            alarm_source['Links'][i] = re.split(r'[-_., ]', alarm_source['Alarm Source'][i])
+            alarm_source['Links'][i] = [j for j in alarm_source['Links'][i] if regex_form.search(j)]
+        
+        min_link_length = 2
+        alarm_source = alarm_source[alarm_source['Links'].apply(len) >= min_link_length]
+
+        alarm_source['Sorted Links'] = alarm_source['Links'].apply(lambda x: tuple(sorted(x)))
+        alarm_source = alarm_source.drop_duplicates(subset=['Sorted Links'])
+        alarm_source = alarm_source.drop(columns=['Sorted Links'])
+
+        return alarm_source
+    
+    if progress_callback:
+        progress_callback(70)
+    
+
+    rtn_mw_alarm = sort_links(mwAlarmDF)
+
+    rtn_report_df = rtn_mw_alarm.copy()
+    rtn_report_df['Request Type'] = "MW"
+    rtn_report_df['Sub Type'] = 'MW links alarms'
+    rtn_report_df['Link name'] = rtn_report_df['Alarm Source']
+    rtn_report_df['Site ID'] = rtn_report_df['Alarm Source'].str[:6]
+    rtn_report_df['Region'] = rtn_report_df['Site ID'].apply(get_region)
+    rtn_report_df['Port'] = "-"
+    rtn_report_df['Link Type'] = 'RTN'
+    rtn_report_df['Description'] = 'NMS is not available'
+    rtn_report_df['Value'] = '-'
+    rtn_report_df['Time'] = rtn_report_df['First Occurred (ST)']
+    rtn_report_df['Severity'] = rtn_report_df['Severity']
+    rtn_report_df['Action to'] = 'FLM'
+
+    rtn_report_df = rtn_report_df[
+        ['Request Type', 
+         'Sub Type', 
+         'Link name', 
+         'Site ID', 
+         'Region', 
+         'Port', 
+         'Link Type', 
+         'Description', 
+         'Value', 
+         'Time', 
+         'Severity', 
+         'Action to']
+    ]    
+
+    if progress_callback:
+        progress_callback(100)
+
+    st.write(rtn_report_df)
+
+    excel_buffer = BytesIO()
+    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+        rtn_report_df.to_excel(writer, sheet_name="RTN MW Links Alarms(FILTERED)", index=False)
 
     return excel_buffer, None
