@@ -121,7 +121,7 @@ def rtn_links_alarms(alarm_file, progress_callback=None):
         progress_callback(10)
 
     df = pd.read_excel(alarm_file, engine='openpyxl', parse_dates=['First Occurred (ST)'], skiprows=5)
-    mwAlarmDF = df[['Alarm Source', 'First Occurred (ST)', 'Severity']]
+    mwAlarmDF = df[['Alarm Source', 'First Occurred (ST)', 'Severity', 'Name']]
 
     if progress_callback:
         progress_callback(30)
@@ -157,7 +157,7 @@ def rtn_links_alarms(alarm_file, progress_callback=None):
     rtn_report_df['Region'] = rtn_report_df['Site ID'].apply(get_region)
     rtn_report_df['Port'] = "-"
     rtn_report_df['Link Type'] = 'RTN'
-    rtn_report_df['Description'] = 'NMS is not available'
+    rtn_report_df['Description'] = rtn_report_df['Name']
     rtn_report_df['Value'] = '-'
     rtn_report_df['Time'] = rtn_report_df['First Occurred (ST)']
     rtn_report_df['Severity'] = rtn_report_df['Severity']

@@ -51,7 +51,7 @@ if mw_tt_file:
                 progress_bar.progress(progress)
             
             if 'excel_data' not in st.session_state:
-                excel_data, error = rtn_report(uploaded_files, mw_tt_file, update_progress)  # Выполняем обработку
+                excel_data, error = rtn_report(uploaded_files, mw_tt_file, update_progress)  # Выполняем обработку mw_tt_file mw_tt_file mw_tt_file mw_tt_file 
                 st.session_state.excel_data = excel_data
                 st.session_state.error = error
             

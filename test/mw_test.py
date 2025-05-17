@@ -24,3 +24,5 @@ def sort_links(alarm_source):
 rtn_mw_alarm = sort_links(mwAlarmDF)
 
 rtn_mw_alarm.to_excel('test.xlsx', index=False, engine='openpyxl')
+
+print("\"Khal Drogo's favorite word is \"athjahakar""")

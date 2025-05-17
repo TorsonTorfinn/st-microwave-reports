@@ -2,5 +2,6 @@ venv
 test.py
 __pycache__
 *.xlsx
-
 .env
+3_NCE_Active_Alarms.py
+nce_alarms_api.py

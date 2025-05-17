@@ -131,6 +131,11 @@ def nr_report(files, mw_tt_file, stand_file, atoll_file, progress_callback=None)
     if progress_callback: # updating the progress
         progress_callback(30)
 
+    all_nr = all_nr[~all_nr['Mean Transmitted Power(dBm)'].between(-100, 0)]
+    all_nr = all_nr[~all_nr['Mean Received Signal Level(dBm)'].between(-100, -80)]
+    all_nr = all_nr[~all_nr['Mean Received Signal Level(dBm)'].between(-48, 0)]
+
+
     # Агрегация данных
     all_nr_agg = all_nr[['Link Name', 'MO Location', 'Mean Transmitted Power(dBm)', 'Mean Received Signal Level(dBm)']].groupby(['Link Name', 'MO Location']).agg(
         tsl_count=pd.NamedAgg(column='Mean Transmitted Power(dBm)', aggfunc='mean'),
@@ -255,7 +260,7 @@ def nr_report(files, mw_tt_file, stand_file, atoll_file, progress_callback=None)
 
 
 
-def rtn_report(files, mw_tt_file, progress_callback=None):
+def rtn_report(files, mw_tt_file, progress_callback=None): # 
     if progress_callback:
         progress_callback(10)
 
@@ -473,7 +478,7 @@ def mss_report(files, mw_tt_file, progress_callback=None):
     mss_report_df['Region'] = mss_report_df['Site ID'].apply(get_region)
     mss_report_df['Port'] = mss_report_df['Monitored Object']
     mss_report_df['Link Type'] = 'MSS'
-    mss_report_df['Description'] = 'Bad Rx Level. Авария на: ' + mss_report_df['Site ID']
+    mss_report_df['Description'] = 'Bad Rx Level'
     mss_report_df['Value'] = mss_report_df['Mean RSL'].round(2)
     mss_report_df['Time'] = '-'
     mss_report_df['Severity'] = mss_report_df['Value'].apply(get_severity)
